@@ -4,8 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <script src="javascri.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
     
+    <nav>
+        <span id="homeNav" >Home</span>
+        <span id="questionNav" >Question</span>
+        <span id="resultsNav" >Results</span>
+    </nav>
+
+    <div id="home">
+    <h1>Home page</h1>      
+    </div>
+
+    <div id="question" class="hide">
+    <h1>Question page</h1>
+
+        <section id="question-container" class="hide">
+            <div id="question">Question</div>
+            <div id="answer-buttons"></div>
+        </section>
+
+        <div class="controls">
+            <button id="start-btn">Start</button>
+            <button id="next-btn" class="hide">Next</button>
+        </div>
+
+    </div>
+
+    <div id="results" class="hide">
+    <h1>Results page</h1>
+    </div>
+
 </body>
 </html>
