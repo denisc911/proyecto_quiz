@@ -1,148 +1,152 @@
-const home = document.getElementById('home')
-const questionPage = document.getElementById('question_pag')
-const results = document.getElementById('results')
+const home = document.getElementById('home');
+const questionPage = document.getElementById('question_pag');
+const results = document.getElementById('results');
 
-const homeNav = document.getElementById('homeNav')
-const questionNav = document.getElementById('questionNav')
-const resultsNav = document.getElementById('resultsNav')
+const homeNav = document.getElementById('homeNav');
+const questionNav = document.getElementById('questionNav');
+const resultsNav = document.getElementById('resultsNav');
 
+const startButton = document.getElementById('start-btn');
+const nextButton = document.getElementById('next-btn');
+const questionContainerElement = document.getElementById('question-container');
+const questionElement = document.getElementById('question');
+const answerButtonsElement = document.getElementById('answer-buttons');
 
-const startButton = document.getElementById('start-btn')
-const nextButton = document.getElementById('next-btn')
-const questionContainerElement = document.getElementById('question-container')
-const questionElement = document.getElementById('question')
-const answerButtonsElement = document.getElementById('answer-buttons')
+// Función para obtener y transformar las preguntas desde la API
+async function getQuestions() {
+  const response = await fetch('https://opentdb.com/api.php?amount=10&category=18&difficulty=easy&type=multiple');
+  const data = await response.json();
+  
+  return data.results.map(apiQuestion => {
+    const allAnswers = [
+      { text: apiQuestion.correct_answer, correct: true },
+      ...apiQuestion.incorrect_answers.map(answer => ({ text: answer, correct: false }))
+    ].sort(() => Math.random() - 0.5); // Mezcla las respuestas
 
-
-//Preguntas y sus respuestas
-const questionList = [
-    {
-      question: 'What is 2 + 2?',
-      answers: [
-        { text: '4', correct: true },
-        { text: '22', correct: false },
-      ],
-    },
-    {
-      question: 'Is web development fun?',
-      answers: [
-        { text: 'Kinda', correct: false },
-        { text: 'YES!!!', correct: true },
-        { text: 'Um no', correct: false },
-        { text: 'IDK', correct: false },
-      ],
-    },
-    {
-      question: 'What is 4 * 2?',
-      answers: [
-        { text: '6', correct: false },
-        { text: '8', correct: true },
-        { text: 'Yes', correct: false },
-      ],
-    },
-]
-
-
-//STAR GAME
-let currentQuestionIndex //No se inicializa a 0 para que no enseñe la primera pregunta todavía
-
-function startGame() {
- startButton.classList.add('hide')
- currentQuestionIndex = 0
- questionContainerElement.classList.remove('hide')
- setNextQuestion()
+    return {
+      question: apiQuestion.question,
+      answers: allAnswers,
+    };
+  });
 }
 
-//SHOW QUESTION
-function showQuestion(item) {
-questionElement.innerText = item.question  //Con esto relleno la pregunta
+let currentQuestionIndex; // No se inicializa a 0 para que no enseñe la primera pregunta todavía
+let questionList = []; // Lista de preguntas vacía inicialmente
 
-item.answers.forEach((answer) => {
-    const button = document.createElement('button')
-    button.innerText = answer.text
+
+//CONFIGURAMOS EL LOCAL STORAGE
+let arrayTest = [] //vendrán las respuestas correctas
+let arrayTestJson = JSON.stringify(arrayTest)
+//compruebo que existe el test
+if (!localStorage.testNumber){
+    localStorage.setItem('testNumber', arrayTestJson)
+}
+
+
+
+// INICIAR JUEGO
+function startGame() {
+  startButton.classList.add('hide');
+  currentQuestionIndex = 0;
+  questionContainerElement.classList.remove('hide');
+  setNextQuestion();
+}
+
+// MOSTRAR PREGUNTA
+function showQuestion(item) {
+  questionElement.innerText = item.question; // Con esto relleno la pregunta
+
+  item.answers.forEach((answer) => {
+    const button = document.createElement('button');
+    button.innerText = answer.text;
 
     if (answer.correct === true) {
-    button.dataset.correct = true
+      button.dataset.correct = true;
     }
-    button.addEventListener('click', selectAnswer)
-    answerButtonsElement.appendChild(button)
-})
+    button.addEventListener('click', selectAnswer);
+    answerButtonsElement.appendChild(button);
+  });
 }
 
-//NEXT QUESTION
-
+// SIGUIENTE PREGUNTA
 function setNextQuestion() {
-    resetState()
-    showQuestion(questionList[currentQuestionIndex])
+  resetState();
+  showQuestion(questionList[currentQuestionIndex]);
 }
 
-
-//STATUS CLASS
-
+// ESTADO DE CLASE
+let resp_correcta
 function setStatusClass(element) {
-    if (element.dataset.correct) {
-      element.classList.add('color-correct')
-    } else {
-      element.classList.add('color-wrong')
-    }
+  if (element.dataset.correct) {
+    element.classList.add('color-correct');
+    resp_correcta++ //
+  } else {
+    element.classList.add('color-wrong');
+  }
 }
 
-//SELECT ANSWER
+// SELECCIONAR RESPUESTA
 function selectAnswer() {
-    Array.from(answerButtonsElement.children).forEach((button) => { 
-        setStatusClass(button) })
+  Array.from(answerButtonsElement.children).forEach((button) => {
+    setStatusClass(button);
+  });
+
+  if (questionList.length > currentQuestionIndex + 1) {
+    nextButton.classList.remove('hide');
+  } else {
+    // Reiniciar y dar start en la practica es lo mismo(deben de iniciar un nuevo array de preguntas)
+    //PASAR A ARRAY Nº DE RESPUESTAS CORRECTAS
+    arrayTest[i] === resp_correcta // array
+    localStorage.setItem('arrayTest', arrayAsString);
+    i++
+    startButton.innerText = 'Restart';
+    resp_correcta = 0
+    startButton.classList.remove('hide');
     
-    if (questionList.length > currentQuestionIndex + 1) {
-//Si el contador de questionList es mayor que la pregunta actual 
-//(que empieza en 0) se elimina hide para que se muestre el boton siguiente.
-        nextButton.classList.remove('hide') 
-      
-    } else {
-      startButton.innerText = 'Restart'
-      startButton.classList.remove('hide')
-    }
+    //Aquí tiene que sumar +1 al nª asignación de Test
+  }
 }
 
-//RESET STATE
+// RESET STATE
 function resetState() {
-    nextButton.classList.add('hide')
-    while (answerButtonsElement.firstChild) {
-      answerButtonsElement.removeChild(answerButtonsElement.firstChild)
-    }
+  nextButton.classList.add('hide');
+  while (answerButtonsElement.firstChild) {
+    answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+  }
 }
 
-startButton.addEventListener('click', startGame)
+// Configura el botón de inicio para obtener preguntas y comenzar el juego
+startButton.addEventListener('click', async () => {
+  questionList = await getQuestions(); // Obtiene las preguntas desde la API
+  startGame(); // Inicia el juego
+});
 
 nextButton.addEventListener('click', () => {
-    currentQuestionIndex++
-    setNextQuestion()
-})
+  currentQuestionIndex++;
+  setNextQuestion();
+});
 
-
-//grafica
-const ctx = document.getElementById('myChart')
-//menu eje x (indicados por un array habrá que iterar 
-//para construirlo, ya que la cantidad de datos dependera de el numero de veces que se hace quiz )
-const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio']
+// Gráfica
+const ctx = document.getElementById('myChart');
+const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'];
 const data = {
- type: 'line',
- data: {
-   labels: labels,
-   datasets: [
-     {
-       label: 'Mi primera gráfica',
-       backgroundColor: 'rgb(255, 99, 132)',
-       borderColor: 'rgb(255, 99, 132)',
-       data: [0, 10, 5, 2, 20, 30, 45],
-     },
-   ],
- },
- options: {
-   scales: {
-     y: {
-       beginAtZero: true,
-     },
-   },
- },
-}
-
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Mi primera gráfica',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: [0, 10, 5, 2, 20, 30, 45],
+      },
+    ],
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+  },
+};
