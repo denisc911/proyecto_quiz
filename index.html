@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="javascri.js" defer></script>
-    <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     
@@ -18,27 +17,31 @@
     </nav>
 
     <div id="home">
-    <h1>Home page</h1>      
+    <h1>Home page</h1>
+    <button id="start-btn">Start</button>      
     </div>
 
-    <div id="question" class="hide">
-    <h1>Question page</h1>
+    <div id="question_pag" > <!-- class="hide" LUEGO CONFIGURARLO PARA QUE HIDE SE QUITE CUANDO CLICK EN START-->
+        <h1>Question page</h1>
 
         <section id="question-container" class="hide">
             <div id="question">Question</div>
             <div id="answer-buttons"></div>
         </section>
-
         <div class="controls">
-            <button id="start-btn">Start</button>
+            
             <button id="next-btn" class="hide">Next</button>
         </div>
 
     </div>
 
-    <div id="results" class="hide">
+    <!-- <div id="results" class="hide">
     <h1>Results page</h1>
-    </div>
+
+        <div class="container">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div> -->
 
 </body>
 </html>
