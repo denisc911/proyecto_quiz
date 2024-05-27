@@ -70,12 +70,6 @@ item.answers.forEach((answer) => {
 })
 }
 
-
-function setNextQuestion() {
-    resetState()
-    showQuestion(questionList[currentQuestionIndex])
-}
-
 /* function startGame() {
     startButton.classList.add('hide')
     currentQuestionIndex = 0
@@ -108,7 +102,7 @@ function selectAnswer() {
     }
 }
 
-function showQuestion(question) {
+/* function showQuestion(question) {
     questionElement.innerText = question.question
     question.answers.forEach((answer) => {
       const button = document.createElement('button')
@@ -119,7 +113,7 @@ function showQuestion(question) {
       button.addEventListener('click', selectAnswer)
       answerButtonsElement.appendChild(button)
     })
-}
+} */
 
 nextButton.addEventListener('click', () => {
     currentQuestionIndex++
