@@ -11,7 +11,7 @@ const nextButton = document.getElementById('next-btn');
 const questionContainerElement = document.getElementById('question-container');
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
-const resultsElement = document.getElementById('results')
+const resultsElement = document.getElementById('results');
 
 // Función para obtener y transformar las preguntas desde la API
 async function getQuestions() {
@@ -31,24 +31,17 @@ async function getQuestions() {
   });
 }
 
-let currentQuestionIndex; // No se inicializa a 0 para que no enseñe la primera pregunta todavía
-let questionList = []; // Lista de preguntas vacía inicialmente
-
-
-//CONFIGURAMOS EL LOCAL STORAGE
-/* let arrayTest = [] //vendrán las respuestas correctas
-let arrayTestJson = JSON.stringify(arrayTest)
-//compruebo que existe el test
-if (!localStorage.testNumber){
-    localStorage.setItem('testNumber', arrayTestJson)
-} */
-
+let currentQuestionIndex;
+let questionList = [];
+let correctAnswersCount = 0;
 let arrayTest = JSON.parse(localStorage.getItem('arrayTest')) || [];
 
 // INICIAR JUEGO
 function startGame() {
   startButton.classList.add('hide');
   currentQuestionIndex = 0;
+  correctAnswersCount = 0; // Reinicia el contador de respuestas correctas al iniciar un nuevo juego
+  resultsElement.innerText = `Respuestas correctas: ${correctAnswersCount}`; // Asegura que el contador se muestra en 0 al iniciar un nuevo test
   questionContainerElement.classList.remove('hide');
   setNextQuestion();
 }
@@ -60,9 +53,10 @@ function showQuestion(item) {
   item.answers.forEach((answer) => {
     const button = document.createElement('button');
     button.innerText = answer.text;
+    button.classList.add('btn', 'btn-outline-primary', 'm-2'); // Agrega clases de Bootstrap para estilizar botones
 
-    if (answer.correct === true) {
-      button.dataset.correct = true;
+    if (answer.correct) {
+      button.dataset.correct = answer.correct;
     }
     button.addEventListener('click', selectAnswer);
     answerButtonsElement.appendChild(button);
@@ -76,47 +70,40 @@ function setNextQuestion() {
 }
 
 // ESTADO DE CLASE
-
-function setStatusClass(element) {
-  if (element.dataset.correct) {
-    element.classList.add('color-correct');
-     //
+function setStatusClass(element, correct) {
+  if (correct) {
+    element.classList.add('btn-success');
+    element.classList.remove('btn-outline-primary');
   } else {
-    element.classList.add('color-wrong');
+    element.classList.add('btn-danger');
+    element.classList.remove('btn-outline-primary');
   }
 }
 
 // SELECCIONAR RESPUESTA
-
-function selectAnswer() {
-  let resp_correcta = 0;
+function selectAnswer(e) {
+  const selectedButton = e.target;
+  const correct = selectedButton.dataset.correct === "true";
 
   Array.from(answerButtonsElement.children).forEach((button) => {
-    setStatusClass(button);
-    if (button.dataset.correct && button.classList.contains('selected')) {
-      resp_correcta++; // Incrementar el contador de respuestas correctas solo si la respuesta es correcta y ha sido seleccionada
-    }
+    setStatusClass(button, button.dataset.correct === "true");
+    button.disabled = true; // Deshabilita todos los botones después de seleccionar una respuesta
   });
+
+  if (correct) {
+    correctAnswersCount++;
+    resultsElement.innerText = `Respuestas correctas: ${correctAnswersCount}`; // Actualiza el contador en la interfaz
+  }
 
   if (questionList.length > currentQuestionIndex + 1) {
     nextButton.classList.remove('hide');
   } else {
-    
-    // Reiniciar y dar start en la practica es lo mismo(deben de iniciar un nuevo array de preguntas)
-    //PASAR A ARRAY Nº DE RESPUESTAS CORRECTAS
-    /* arrayTest[i] === resp_correcta // array
-    localStorage.setItem('arrayTest', arrayAsString);
-    i++ */
-    /* arrayTest.push(resp_correcta);
+    arrayTest.push(correctAnswersCount);
     localStorage.setItem('arrayTest', JSON.stringify(arrayTest));
- */
-    resultsElement.innerText = `Respuestas correctas: ${resp_correcta}`;
 
+    resultsElement.innerText = `Respuestas correctas: ${correctAnswersCount}`;
     startButton.innerText = 'Restart';
-    resp_correcta = 0;
     startButton.classList.remove('hide');
-    
-    //Aquí tiene que sumar +1 al nª asignación de Test
   }
 }
 
@@ -140,38 +127,11 @@ nextButton.addEventListener('click', () => {
 });
 
 // Evento para marcar la respuesta seleccionada
-answerButtonsElement.addEventListener('click', async (event) => {
+answerButtonsElement.addEventListener('click', (event) => {
   const selectedButton = event.target;
   if (selectedButton.tagName === 'BUTTON') {
     const buttons = Array.from(answerButtonsElement.children);
-    for (const button of buttons) {
-      button.classList.remove('selected');
-    }
+    buttons.forEach(button => button.classList.remove('selected'));
     selectedButton.classList.add('selected');
   }
 });
-
-// Gráfica
-/* const ctx = document.getElementById('myChart');
-const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'];
-const data = {
-  type: 'line',
-  data: {
-    labels: labels,
-    datasets: [
-      {
-        label: 'Mi primera gráfica',
-        backgroundColor: 'rgb(255, 99, 132)',
-        borderColor: 'rgb(255, 99, 132)',
-        data: [0, 10, 5, 2, 20, 30, 45],
-      },
-    ],
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  },
-}; */
