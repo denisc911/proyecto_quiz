@@ -11,10 +11,11 @@ const nextButton = document.getElementById('next-btn');
 const questionContainerElement = document.getElementById('question-container');
 const questionElement = document.getElementById('question');
 const answerButtonsElement = document.getElementById('answer-buttons');
+const resultsElement = document.getElementById('results')
 
 // Función para obtener y transformar las preguntas desde la API
 async function getQuestions() {
-  const response = await fetch('https://opentdb.com/api.php?amount=10&category=18&difficulty=easy&type=multiple');
+  const response = await fetch('https://opentdb.com/api.php?amount=2&category=18&difficulty=easy&type=multiple');
   const data = await response.json();
   
   return data.results.map(apiQuestion => {
@@ -35,14 +36,14 @@ let questionList = []; // Lista de preguntas vacía inicialmente
 
 
 //CONFIGURAMOS EL LOCAL STORAGE
-let arrayTest = [] //vendrán las respuestas correctas
+/* let arrayTest = [] //vendrán las respuestas correctas
 let arrayTestJson = JSON.stringify(arrayTest)
 //compruebo que existe el test
 if (!localStorage.testNumber){
     localStorage.setItem('testNumber', arrayTestJson)
-}
+} */
 
-
+let arrayTest = JSON.parse(localStorage.getItem('arrayTest')) || [];
 
 // INICIAR JUEGO
 function startGame() {
@@ -75,32 +76,44 @@ function setNextQuestion() {
 }
 
 // ESTADO DE CLASE
-let resp_correcta
+
 function setStatusClass(element) {
   if (element.dataset.correct) {
     element.classList.add('color-correct');
-    resp_correcta++ //
+     //
   } else {
     element.classList.add('color-wrong');
   }
 }
 
 // SELECCIONAR RESPUESTA
+
 function selectAnswer() {
+  let resp_correcta = 0;
+
   Array.from(answerButtonsElement.children).forEach((button) => {
     setStatusClass(button);
+    if (button.dataset.correct && button.classList.contains('selected')) {
+      resp_correcta++; // Incrementar el contador de respuestas correctas solo si la respuesta es correcta y ha sido seleccionada
+    }
   });
 
   if (questionList.length > currentQuestionIndex + 1) {
     nextButton.classList.remove('hide');
   } else {
+    
     // Reiniciar y dar start en la practica es lo mismo(deben de iniciar un nuevo array de preguntas)
     //PASAR A ARRAY Nº DE RESPUESTAS CORRECTAS
-    arrayTest[i] === resp_correcta // array
+    /* arrayTest[i] === resp_correcta // array
     localStorage.setItem('arrayTest', arrayAsString);
-    i++
+    i++ */
+    /* arrayTest.push(resp_correcta);
+    localStorage.setItem('arrayTest', JSON.stringify(arrayTest));
+ */
+    resultsElement.innerText = `Respuestas correctas: ${resp_correcta}`;
+
     startButton.innerText = 'Restart';
-    resp_correcta = 0
+    resp_correcta = 0;
     startButton.classList.remove('hide');
     
     //Aquí tiene que sumar +1 al nª asignación de Test
@@ -126,8 +139,20 @@ nextButton.addEventListener('click', () => {
   setNextQuestion();
 });
 
+// Evento para marcar la respuesta seleccionada
+answerButtonsElement.addEventListener('click', async (event) => {
+  const selectedButton = event.target;
+  if (selectedButton.tagName === 'BUTTON') {
+    const buttons = Array.from(answerButtonsElement.children);
+    for (const button of buttons) {
+      button.classList.remove('selected');
+    }
+    selectedButton.classList.add('selected');
+  }
+});
+
 // Gráfica
-const ctx = document.getElementById('myChart');
+/* const ctx = document.getElementById('myChart');
 const labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'];
 const data = {
   type: 'line',
@@ -149,4 +174,4 @@ const data = {
       },
     },
   },
-};
+}; */
