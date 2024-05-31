@@ -8,3 +8,17 @@
     .color-wrong {
     background-color: rgb(255, 0, 0);
 }
+
+.circle {
+    display: inline-block;
+    width: 200px; 
+    height: 200px;
+    border-radius: 50%;
+    background-color: #00CFFF; 
+    color: white; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold; 
+  }
