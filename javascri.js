@@ -28,7 +28,7 @@ let arrayTest = JSON.parse(localStorage.getItem('arrayTest')) || [];
 let resultsChart = new Chart(resultsChartElement, {
     type: 'line',
     data: {
-        labels: arrayTest.map((_, index) => `Quiz ${index + 1}`),
+        labels: arrayTest.map((_, index) => `TEST ${index + 1}`),
         datasets: [{
             data: arrayTest,
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -44,6 +44,13 @@ let resultsChart = new Chart(resultsChartElement, {
                 ticks: {
                     stepSize: 1 
                 }
+            },
+            x: {
+                ticks: {
+                    minRotation: 45, 
+                    maxRotation: 45,
+                    fontSize: 8 
+                }
             }
         },
         plugins: {
@@ -56,7 +63,7 @@ let resultsChart = new Chart(resultsChartElement, {
 });
 
 async function getQuestions() {
-    const response = await fetch('https://opentdb.com/api.php?amount=2&category=18&difficulty=easy&type=multiple');
+    const response = await fetch('https://opentdb.com/api.php?amount=10&category=18&difficulty=easy&type=multiple');
     const data = await response.json();
     return data.results.map(apiQuestion => {
         const allAnswers = [
